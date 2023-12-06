@@ -31,7 +31,7 @@ func AuditLimit(r *ghttp.Request) {
 		g.Log().Error(ctx, "GetJson", err)
 		r.Response.Status = 400
 		r.Response.WriteJson(g.Map{
-			"detail": "请求格式错误.",
+			"detail": err.Error(),
 		})
 	}
 	action := reqJson.Get("action").String() // action为 next时才是真正的请求，否则可能是继续上次请求 action 为 variant 时为重新生成
