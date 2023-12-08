@@ -9,7 +9,7 @@
 ```yml
 version: '3'
 services:
-  cdn-oaistatic:
+  auditlimit:
     image: xyhelper/auditlimit
     restart: always
     ports:
@@ -17,6 +17,8 @@ services:
     environment:
       LIMIT: 40  # 限制每个userToken允许的次数
       PER: "3h" # 限制周期 1s, 1m, 1h, 1d, 1w, 1y
+
+    
 
 ```
 

@@ -1,6 +1,6 @@
 version: '3'
 services:
-  cdn-oaistatic:
+  auditlimit:
     image: xyhelper/auditlimit
     restart: always
     ports:

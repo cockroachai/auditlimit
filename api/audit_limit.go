@@ -43,7 +43,7 @@ func AuditLimit(r *ghttp.Request) {
 	g.Log().Debug(ctx, "prompt", prompt)
 
 	// 判断提问内容是否包含禁止词
-	if containsAny(prompt, config.ForbiddenWords) {
+	if containsAny(ctx, prompt, config.ForbiddenWords) {
 		r.Response.Status = 400
 		r.Response.WriteJson(g.Map{
 			"detail": "请珍惜账号,不要提问违禁内容.",
@@ -85,9 +85,10 @@ func AuditLimit(r *ghttp.Request) {
 }
 
 // 判断字符串是否包含数组中的任意一个元素
-func containsAny(text string, array []string) bool {
+func containsAny(ctx g.Ctx, text string, array []string) bool {
 	for _, item := range array {
 		if strings.Contains(text, item) {
+			g.Log().Debug(ctx, "containsAny", text, item)
 			return true
 		}
 	}
