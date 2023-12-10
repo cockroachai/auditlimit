@@ -2,6 +2,8 @@
 
 用于内容审核的限流器,本代码更多的是为了演示如果使用限流器,大家可以根据自己的需求进行修改。
 
+如果不想部署,可以使用公共限流器: `https://auditlimit.closeai.biz/audit_limit`
+
 ## 部署方法
 
 创建`docker-compose.yml`文件

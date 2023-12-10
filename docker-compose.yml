@@ -4,7 +4,9 @@ services:
     image: xyhelper/auditlimit
     restart: always
     ports:
-      - 9611:8080
+      - "127.0.0.1:9611:8080"
+    volumes:
+      - ./data:/app/data
     environment:
       LIMIT: 40  # 限制每个userToken允许的次数
       PER: "3h" # 限制周期 1s, 1m, 1h, 1d, 1w, 1y
