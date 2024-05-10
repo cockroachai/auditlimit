@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/util/gconv"
 )
 
 func AuditLimit(r *ghttp.Request) {
@@ -59,7 +59,7 @@ func AuditLimit(r *ghttp.Request) {
 		g.Log().Debug(ctx, "remain", remain)
 		if remain < 1 {
 			r.Response.Status = 429
-			resMsg := gjson.New(MsgPlus429)
+			// resMsg := gjson.New(MsgPlus429)
 			// 根据remain计算需要等待的时间
 			// 生产间隔
 			creatInterval := config.PER / time.Duration(config.LIMIT)
@@ -68,8 +68,12 @@ func AuditLimit(r *ghttp.Request) {
 			// 等待时间
 			wait := (1 - remain) * creatIntervalSec
 			g.Log().Debug(ctx, "wait", wait, "creatIntervalSec", creatIntervalSec)
-			resMsg.Set("detail.clears_in", int(wait))
-			r.Response.WriteJson(resMsg)
+			// resMsg.Set("detail.clears_in", int(wait))
+			// r.Response.WriteJson(resMsg)
+			r.Response.WriteJson(g.Map{
+				// "detail:":"您已经触发使用频率限制,当前限制为 "+ gconv.String(config.LIMIT) + " 次/"+ gconv.String(config.PER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
+				"detail": "You have triggered the usage frequency limit, the current limit is " + gconv.String(config.LIMIT) + " times/" + gconv.String(config.PER) + ", please wait " + gconv.String(int(wait)) + " seconds before trying again./n" + "您已经触发使用频率限制,当前限制为 " + gconv.String(config.LIMIT) + " 次/" + gconv.String(config.PER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
+			})
 			return
 		} else {
 			// 消耗一个令牌
