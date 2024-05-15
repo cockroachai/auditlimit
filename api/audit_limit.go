@@ -7,6 +7,7 @@ import (
 
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
+	"github.com/gogf/gf/v2/text/gstr"
 	"github.com/gogf/gf/v2/util/gconv"
 )
 
@@ -52,7 +53,8 @@ func AuditLimit(r *ghttp.Request) {
 	}
 
 	// 判断模型是否为plus模型 如果是则使用plus模型的限制
-	if config.PlusModels.Contains(model) {
+	// if config.PlusModels.Contains(model) {
+	if gstr.HasPrefix(model, "gpt-4") {
 		limiter := GetVisitor(token, config.LIMIT, config.PER)
 		// 获取剩余次数
 		remain := limiter.TokensAt(time.Now())
@@ -72,7 +74,7 @@ func AuditLimit(r *ghttp.Request) {
 			// r.Response.WriteJson(resMsg)
 			r.Response.WriteJson(g.Map{
 				// "detail:":"您已经触发使用频率限制,当前限制为 "+ gconv.String(config.LIMIT) + " 次/"+ gconv.String(config.PER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
-				"detail": "You have triggered the usage frequency limit, the current limit is " + gconv.String(config.LIMIT) + " times/" + gconv.String(config.PER) + ", please wait " + gconv.String(int(wait)) + " seconds before trying again./n" + "您已经触发使用频率限制,当前限制为 " + gconv.String(config.LIMIT) + " 次/" + gconv.String(config.PER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
+				"detail": "You have triggered the usage frequency limit, the current limit is " + gconv.String(config.LIMIT) + " times/" + gconv.String(config.PER) + ", please wait " + gconv.String(int(wait)) + " seconds before trying again.\n" + "您已经触发使用频率限制,当前限制为 " + gconv.String(config.LIMIT) + " 次/" + gconv.String(config.PER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
 			})
 			return
 		} else {
