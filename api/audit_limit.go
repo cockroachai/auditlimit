@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/text/gstr"
@@ -50,6 +51,35 @@ func AuditLimit(r *ghttp.Request) {
 			"detail": "请珍惜账号,不要提问违禁内容.",
 		})
 		return
+	}
+
+	// OPENAI Moderation 检测
+	if config.OAIKEY != "" {
+		// 检测是否包含违规内容
+		resp, err := g.Client().SetHeaderMap(g.MapStrStr{
+			"Authorization": "Bearer " + config.OAIKEY,
+			"Content-Type":  "application/json",
+		}).Post(ctx, config.MODERATION, g.Map{
+			"input": prompt,
+		})
+
+		if err != nil {
+			g.Log().Error(ctx, "Moderation Error: ", err)
+			r.Response.Status = 400
+			r.Response.WriteJson(g.Map{
+				"detail": err.Error(),
+			})
+			return
+		}
+		// 返回的 json 中 results.flagged 为 true 时为违规内容
+		respBody := resp.ReadAllString()
+		//g.Log().Debug(ctx, "resp:", respBody)
+		respJson := gjson.New(respBody)
+		if respJson.Get("results.0.flagged").Bool() {
+			r.Response.Status = 400
+			r.Response.WriteJson(MsgMod400)
+			return
+		}
 	}
 
 	// 判断模型是否为plus模型 如果是则使用plus模型的限制
