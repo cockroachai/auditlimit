@@ -75,7 +75,9 @@ func AuditLimit(r *ghttp.Request) {
 		respBody := resp.ReadAllString()
 		//g.Log().Debug(ctx, "resp:", respBody)
 		respJson := gjson.New(respBody)
-		if respJson.Get("results.0.flagged").Bool() {
+		isFlagged := respJson.Get("results.0.flagged").Bool()
+		g.Log().Debug(ctx, "flagged", isFlagged)
+		if isFlagged {
 			r.Response.Status = 400
 			r.Response.WriteJson(MsgMod400)
 			return
