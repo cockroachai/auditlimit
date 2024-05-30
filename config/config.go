@@ -15,6 +15,7 @@ var (
 	LIMIT          = 40                                      // 限制次数
 	PER            = time.Hour * 3                           // 限制时间
 	OAIKEY         = ""                                      // OAIKEY
+	OAIKEYLOG      = ""                                      // OAIKEYLOG 隐藏
 	MODERATION     = "https://api.openai.com/v1/moderations" // OPENAI Moderation 检测
 )
 
@@ -36,11 +37,13 @@ func init() {
 	}
 	g.Log().Info(ctx, "PER:", PER)
 	oaikey := g.Cfg().MustGetWithEnv(ctx, "OAIKEY").String()
-	// oaikey 不为空且长度大于 50 才是有效 key
-	if oaikey != "" || len(oaikey) > 50 {
+	// oaikey 不为空
+	if oaikey != "" {
 		OAIKEY = oaikey
+		// 日志隐藏 oaikey，有 * 代表有值
+		OAIKEYLOG = "******"
 	}
-	g.Log().Info(ctx, "OAIKEY:", OAIKEY[:16]+"******")
+	g.Log().Info(ctx, "OAIKEY:", OAIKEYLOG)
 	moderation := g.Cfg().MustGetWithEnv(ctx, "MODERATION").String()
 	if moderation != "" {
 		MODERATION = moderation
