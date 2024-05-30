@@ -59,3 +59,12 @@ docker-compose up -d
 ## 正常返回
 
 状态码: 200
+
+
+## 内容审核
+
+配置环境变量
+
+OAIKEY: "sk-xxxxxx"  # api.openai.com可用的key或sess
+
+将启用moderations接口内容审核

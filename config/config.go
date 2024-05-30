@@ -11,12 +11,13 @@ import (
 var (
 	PORT           = 8080
 	PlusModels     = garray.NewStrArrayFrom([]string{"gpt-4", "gpt-4o", "gpt-4-browsing", "gpt-4-plugins", "gpt-4-mobile", "gpt-4-code-interpreter", "gpt-4-dalle", "gpt-4-gizmo", "gpt-4-magic-create"})
-	ForbiddenWords = []string{}                              // 禁止词
-	LIMIT          = 40                                      // 限制次数
-	PER            = time.Hour * 3                           // 限制时间
-	OAIKEY         = ""                                      // OAIKEY
-	OAIKEYLOG      = ""                                      // OAIKEYLOG 隐藏
-	MODERATION     = "https://api.openai.com/v1/moderations" // OPENAI Moderation 检测
+	ForbiddenWords = []string{}    // 禁止词
+	LIMIT          = 40            // 限制次数
+	PER            = time.Hour * 3 // 限制时间
+	OAIKEY         = ""            // OAIKEY
+	OAIKEYLOG      = ""            // OAIKEYLOG 隐藏
+	// MODERATION     = "https://api.openai.com/v1/moderations" // OPENAI Moderation 检测
+	MODERATION = "https://gateway.ai.cloudflare.com/v1/a8cace244ffbc233655fefeaca37d515/xyhelper/openai/moderations"
 )
 
 func init() {
