@@ -1,3 +1,5 @@
 PORT: 9612 
 LIMIT: 2
 PER: "1h"
+OAIKEY: ""
+MODERATION: "https://api.openai.com/v1/moderations"
