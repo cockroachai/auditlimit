@@ -56,25 +56,18 @@ func AuditLimit(r *ghttp.Request) {
 	// OPENAI Moderation 检测
 	if config.OAIKEY != "" {
 		// 检测是否包含违规内容
-		resp, err := g.Client().SetHeaderMap(g.MapStrStr{
+		respVar := g.Client().SetHeaderMap(g.MapStrStr{
 			"Authorization": "Bearer " + config.OAIKEY,
 			"Content-Type":  "application/json",
-		}).Post(ctx, config.MODERATION, g.Map{
+		}).PostVar(ctx, config.MODERATION, g.Map{
 			"input": prompt,
 		})
 
-		if err != nil {
-			g.Log().Error(ctx, "Moderation Error: ", err)
-			r.Response.Status = 400
-			r.Response.WriteJson(g.Map{
-				"detail": err.Error(),
-			})
-			return
-		}
 		// 返回的 json 中 results.flagged 为 true 时为违规内容
-		respBody := resp.ReadAllString()
+		// respBody := resp.ReadAllString()
 		//g.Log().Debug(ctx, "resp:", respBody)
-		respJson := gjson.New(respBody)
+		g.Dump(respVar)
+		respJson := gjson.New(respVar)
 		isFlagged := respJson.Get("results.0.flagged").Bool()
 		g.Log().Debug(ctx, "flagged", isFlagged)
 		if isFlagged {
