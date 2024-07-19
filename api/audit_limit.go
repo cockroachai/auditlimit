@@ -79,7 +79,7 @@ func AuditLimit(r *ghttp.Request) {
 
 	// 判断模型是否为plus模型 如果是则使用plus模型的限制
 	// if config.PlusModels.Contains(model) {
-	if gstr.HasPrefix(model, "gpt-4") {
+	if gstr.HasPrefix(model, "gpt-4")&&model!="gpt-4o-mini" {
 		limiter := GetVisitor(token, config.LIMIT, config.PER)
 		// 获取剩余次数
 		remain := limiter.TokensAt(time.Now())
