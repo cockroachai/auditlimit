@@ -19,6 +19,8 @@ services:
     environment:
       LIMIT: 40  # 限制每个userToken允许的次数
       PER: "3h" # 限制周期 1s, 1m, 1h, 1d, 1w, 1y
+      O1LIMIT: 10  # 限制每个userToken允许的O1模型次数
+      O1PER: "1w" # 限制周期 1s, 1m, 1h, 1d, 1w, 1y
 
     
 

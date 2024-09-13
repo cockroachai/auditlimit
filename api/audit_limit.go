@@ -8,7 +8,6 @@ import (
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
-	"github.com/gogf/gf/v2/text/gstr"
 	"github.com/gogf/gf/v2/util/gconv"
 )
 
@@ -76,10 +75,41 @@ func AuditLimit(r *ghttp.Request) {
 			return
 		}
 	}
+	// 先判断是否为o1模型
+	if config.O1Models.Contains(model) {
+		limiter := GetVisitor(token+"|o1model", config.O1LIMIT, config.O1PER)
+		// 获取剩余次数
+		remain := limiter.TokensAt(time.Now())
+		g.Log().Debug(ctx, "remain", remain)
+		if remain < 1 {
+			r.Response.Status = 429
+			// resMsg := gjson.New(MsgO1429)
+			// 根据remain计算需要等待的时间
+			// 生产间隔
+			creatInterval := config.O1PER / time.Duration(config.O1LIMIT)
+			// 转换为秒
+			creatIntervalSec := float64(creatInterval.Seconds())
+			// 等待时间
+			wait := (1 - remain) * creatIntervalSec
+			g.Log().Debug(ctx, "wait", wait, "creatIntervalSec", creatIntervalSec)
+			// resMsg.Set("detail.clears_in", int(wait))
+			// r.Response.WriteJson(resMsg)
+			r.Response.WriteJson(g.Map{
+				// "detail:":"您已经触发使用频率限制,当前限制为 "+ gconv.String(config.O1LIMIT) + " 次/"+ gconv.String(config.O1PER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
+				"detail": "You have triggered the usage frequency limit, the current limit is " + gconv.String(config.O1LIMIT) + " times/" + gconv.String(config.O1PER) + ", please wait " + gconv.String(int(wait)) + " seconds before trying again.\n" + "您已经触发使用频率限制,当前限制为 " + gconv.String(config.O1LIMIT) + " 次/" + gconv.String(config.O1PER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
+			})
+			return
+		} else {
+			// 消耗一个令牌
+			limiter.Allow()
+			r.Response.Status = 200
+			return
+		}
+	}
 
 	// 判断模型是否为plus模型 如果是则使用plus模型的限制
-	// if config.PlusModels.Contains(model) {
-	if gstr.HasPrefix(model, "gpt-4")&&model!="gpt-4o-mini" {
+	// if gstr.HasPrefix(model, "gpt-4")&&model!="gpt-4o-mini"
+	if config.PlusModels.Contains(model) {
 		limiter := GetVisitor(token, config.LIMIT, config.PER)
 		// 获取剩余次数
 		remain := limiter.TokensAt(time.Now())
