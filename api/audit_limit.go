@@ -75,9 +75,9 @@ func AuditLimit(r *ghttp.Request) {
 			return
 		}
 	}
-	// 先判断是否为o1模型
-	if config.O1Models.Contains(model) {
-		limiter := GetVisitor(token+"|o1model", config.O1LIMIT, config.O1PER)
+	// 先判断是否为o1pre模型
+	if config.O1preModels.Contains(model) {
+		limiter := GetVisitor(token+"|o1model", config.O1PRELIMIT, config.O1PREPER)
 		// 获取剩余次数
 		remain := limiter.TokensAt(time.Now())
 		g.Log().Debug(ctx, "remain", remain)
@@ -86,7 +86,7 @@ func AuditLimit(r *ghttp.Request) {
 			// resMsg := gjson.New(MsgO1429)
 			// 根据remain计算需要等待的时间
 			// 生产间隔
-			creatInterval := config.O1PER / time.Duration(config.O1LIMIT)
+			creatInterval := config.O1PREPER / time.Duration(config.O1PRELIMIT)
 			// 转换为秒
 			creatIntervalSec := float64(creatInterval.Seconds())
 			// 等待时间
@@ -96,7 +96,36 @@ func AuditLimit(r *ghttp.Request) {
 			// r.Response.WriteJson(resMsg)
 			r.Response.WriteJson(g.Map{
 				// "detail:":"您已经触发使用频率限制,当前限制为 "+ gconv.String(config.O1LIMIT) + " 次/"+ gconv.String(config.O1PER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
-				"detail": "You have triggered the usage frequency limit, the current limit is " + gconv.String(config.O1LIMIT) + " times/" + gconv.String(config.O1PER) + ", please wait " + gconv.String(int(wait)) + " seconds before trying again.\n" + "您已经触发使用频率限制,当前限制为 " + gconv.String(config.O1LIMIT) + " 次/" + gconv.String(config.O1PER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
+				"detail": "You have triggered the usage frequency limit, the current limit is " + gconv.String(config.O1PRELIMIT) + " times/" + gconv.String(config.O1PREPER) + ", please wait " + gconv.String(int(wait)) + " seconds before trying again.\n" + "您已经触发使用频率限制,当前限制为 " + gconv.String(config.O1PRELIMIT) + " 次/" + gconv.String(config.O1PREPER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
+			})
+			return
+		} else {
+			// 消耗一个令牌
+			limiter.Allow()
+			r.Response.Status = 200
+			return
+		}
+	} else if config.O1miniModels.Contains(model) { // 判断是否为o1mini模型
+		limiter := GetVisitor(token+"|o1mini", config.O1MINILIMIT, config.O1MINIPER)
+		// 获取剩余次数
+		remain := limiter.TokensAt(time.Now())
+		g.Log().Debug(ctx, "remain", remain)
+		if remain < 1 {
+			r.Response.Status = 429
+			// resMsg := gjson.New(MsgO1429)
+			// 根据remain计算需要等待的时间
+			// 生产间隔
+			creatInterval := config.O1MINIPER / time.Duration(config.O1MINILIMIT)
+			// 转换为秒
+			creatIntervalSec := float64(creatInterval.Seconds())
+			// 等待时间
+			wait := (1 - remain) * creatIntervalSec
+			g.Log().Debug(ctx, "wait", wait, "creatIntervalSec", creatIntervalSec)
+			// resMsg.Set("detail.clears_in", int(wait))
+			// r.Response.WriteJson(resMsg)
+			r.Response.WriteJson(g.Map{
+				// "detail:":"您已经触发使用频率限制,当前限制为 "+ gconv.String(config.O1LIMIT) + " 次/"+ gconv.String(config.O1PER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
+				"detail": "You have triggered the usage frequency limit, the current limit is " + gconv.String(config.O1MINILIMIT) + " times/" + gconv.String(config.O1MINIPER) + ", please wait " + gconv.String(int(wait)) + " seconds before trying again.\n" + "您已经触发使用频率限制,当前限制为 " + gconv.String(config.O1MINILIMIT) + " 次/" + gconv.String(config.O1MINIPER) + ",请等待 " + gconv.String(int(wait)) + " 秒后再试.",
 			})
 			return
 		} else {
