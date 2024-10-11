@@ -8,7 +8,14 @@ services:
     volumes:
       - ./data:/app/data
     environment:
-      LIMIT: 40  # 限制每个userToken允许的次数
-      PER: "3h" # 限制周期 1s, 1m, 1h, 1d, 1w, 1y
-
+      PORT: 9611
+      OAIKEY: "" # OpenAI API key 用于内容审核
+      AUTO: "200/3h"
+      TEXT-DAVINCI-002-RENDER-SHA: "200/3h"
+      GPT-4O-MINI: "200/3h"
+      GPT-4O: "60/3h"
+      GPT-4: "20/3h"
+      GPT-4O-CANMORE: "30/3h"
+      O1-PREVIEW: "7/24h"
+      O1-MINI: "50/24h"
     
