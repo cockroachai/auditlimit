@@ -89,7 +89,15 @@ func AuditLimit(r *ghttp.Request) {
 	g.Log().Debug(ctx, token, model, "remain", remain, "limit", limit, "per", per)
 	if remain < 1 {
 		r.Response.Status = 429
-		delayFrom := limiter.Reserve().DelayFrom(time.Now())
+		reservation := limiter.ReserveN(time.Now(), 1)
+		if !reservation.OK() {
+			// 处理预留失败的情况，例如返回错误
+			r.Response.WriteJson(g.Map{
+				"detail": "You have triggered the usage frequency limit of " + model + ", the current limit is " + gconv.String(limit) + " times/" + gconv.String(per) + ", please wait a moment before trying again.\n" + "您已经触发 " + model + " 使用频率限制,当前限制为 " + gconv.String(limit) + " 次/" + gconv.String(per) + ",请稍后再试.",
+			})
+			return
+		}
+		delayFrom := reservation.Delay()
 		g.Log().Debug(ctx, "delayFrom", delayFrom)
 		r.Response.WriteJson(g.Map{
 			"detail": "You have triggered the usage frequency limit of " + model + ", the current limit is " + gconv.String(limit) + " times/" + gconv.String(per) + ", please wait " + gconv.String(int(delayFrom.Seconds())) + " seconds before trying again.\n" + "您已经触发 " + model + " 使用频率限制,当前限制为 " + gconv.String(limit) + " 次/" + gconv.String(per) + ",请等待 " + gconv.String(int(delayFrom.Seconds())) + " 秒后再试.",
