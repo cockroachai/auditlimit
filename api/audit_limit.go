@@ -32,7 +32,7 @@ func AuditLimit(r *ghttp.Request) {
 		g.Log().Error(ctx, "GetJson", err)
 		r.Response.Status = 400
 		r.Response.WriteJson(g.Map{
-			"detail": err.Error(),
+			"error": err.Error(),
 		})
 	}
 	action := reqJson.Get("action").String() // action为 next时才是真正的请求，否则可能是继续上次请求 action 为 variant 时为重新生成
@@ -47,7 +47,7 @@ func AuditLimit(r *ghttp.Request) {
 	if containsAny(ctx, prompt, config.ForbiddenWords) {
 		r.Response.Status = 400
 		r.Response.WriteJson(g.Map{
-			"detail": "请珍惜账号,不要提问违禁内容.",
+			"error": "请珍惜账号,不要提问违禁内容.",
 		})
 		return
 	}
@@ -80,7 +80,7 @@ func AuditLimit(r *ghttp.Request) {
 		g.Log().Error(ctx, "GetVisitorWithModel", err)
 		r.Response.Status = 500
 		r.Response.WriteJson(g.Map{
-			"detail": err.Error(),
+			"error": err.Error(),
 		})
 		return
 	}
@@ -93,14 +93,14 @@ func AuditLimit(r *ghttp.Request) {
 		if !reservation.OK() {
 			// 处理预留失败的情况，例如返回错误
 			r.Response.WriteJson(g.Map{
-				"detail": "You have triggered the usage frequency limit of " + model + ", the current limit is " + gconv.String(limit) + " times/" + gconv.String(per) + ", please wait a moment before trying again.\n" + "您已经触发 " + model + " 使用频率限制,当前限制为 " + gconv.String(limit) + " 次/" + gconv.String(per) + ",请稍后再试.",
+				"error": "You have triggered the usage frequency limit of " + model + ", the current limit is " + gconv.String(limit) + " times/" + gconv.String(per) + ", please wait a moment before trying again.\n" + "您已经触发 " + model + " 使用频率限制,当前限制为 " + gconv.String(limit) + " 次/" + gconv.String(per) + ",请稍后再试.",
 			})
 			return
 		}
 		delayFrom := reservation.Delay()
 		g.Log().Debug(ctx, "delayFrom", delayFrom)
 		r.Response.WriteJson(g.Map{
-			"detail": "You have triggered the usage frequency limit of " + model + ", the current limit is " + gconv.String(limit) + " times/" + gconv.String(per) + ", please wait " + gconv.String(int(delayFrom.Seconds())) + " seconds before trying again.\n" + "您已经触发 " + model + " 使用频率限制,当前限制为 " + gconv.String(limit) + " 次/" + gconv.String(per) + ",请等待 " + gconv.String(int(delayFrom.Seconds())) + " 秒后再试.",
+			"error": "You have triggered the usage frequency limit of " + model + ", the current limit is " + gconv.String(limit) + " times/" + gconv.String(per) + ", please wait " + gconv.String(int(delayFrom.Seconds())) + " seconds before trying again.\n" + "您已经触发 " + model + " 使用频率限制,当前限制为 " + gconv.String(limit) + " 次/" + gconv.String(per) + ",请等待 " + gconv.String(int(delayFrom.Seconds())) + " 秒后再试.",
 		})
 		return
 	}
