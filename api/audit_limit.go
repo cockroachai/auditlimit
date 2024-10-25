@@ -95,9 +95,12 @@ func AuditLimit(r *ghttp.Request) {
 			r.Response.WriteJson(g.Map{
 				"error": "You have triggered the usage frequency limit of " + model + ", the current limit is " + gconv.String(limit) + " times/" + gconv.String(per) + ", please wait a moment before trying again.\n" + "您已经触发 " + model + " 使用频率限制,当前限制为 " + gconv.String(limit) + " 次/" + gconv.String(per) + ",请稍后再试.",
 			})
+			reservation.Cancel() // 取消预留，不消耗令牌
 			return
 		}
 		delayFrom := reservation.Delay()
+		reservation.Cancel() // 取消预留，不消耗令牌
+
 		g.Log().Debug(ctx, "delayFrom", delayFrom)
 		r.Response.WriteJson(g.Map{
 			"error": "You have triggered the usage frequency limit of " + model + ", the current limit is " + gconv.String(limit) + " times/" + gconv.String(per) + ", please wait " + gconv.String(int(delayFrom.Seconds())) + " seconds before trying again.\n" + "您已经触发 " + model + " 使用频率限制,当前限制为 " + gconv.String(limit) + " 次/" + gconv.String(per) + ",请等待 " + gconv.String(int(delayFrom.Seconds())) + " 秒后再试.",
