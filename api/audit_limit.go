@@ -77,7 +77,7 @@ func AuditLimit(r *ghttp.Request) {
 			return
 		}
 	}
-	if system_hint != "research" {
+	if system_hint == "research" {
 		model = "research"
 	}
 	limit, per, limiter, err := GetVisitorWithModel(ctx, token, model)
