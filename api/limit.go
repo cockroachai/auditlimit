@@ -37,7 +37,10 @@ func GetVisitor(key string, limit int, per time.Duration) *rate.Limiter {
 
 func GetVisitorWithModel(ctx g.Ctx, token, model string) (limit int, per time.Duration, limiter *rate.Limiter, err error) {
 	model = gstr.ToUpper(model)
-	modelrate := g.Cfg().MustGetWithEnv(ctx, model, "40/3h").String()
+	modelrate := g.Cfg().MustGetWithEnv(ctx, model).String()
+	if modelrate == "" {
+		modelrate = g.Cfg().MustGetWithEnv(ctx, "DEFAULT").String()
+	}
 	modelratearr := strings.Split(modelrate, "/")
 	// g.Dump(modelratearr)
 	if len(modelratearr) != 2 {
