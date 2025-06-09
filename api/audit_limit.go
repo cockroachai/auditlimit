@@ -40,6 +40,8 @@ func AuditLimit(r *ghttp.Request) {
 
 	model := reqJson.Get("model").String() // 模型名称
 	g.Log().Debug(ctx, "model", model)
+	system_hint := reqJson.Get("system_hints.0").String() // 系统提示
+	g.Log().Debug(ctx, "system_hint", system_hint)
 	prompt := reqJson.Get("messages.0.content.parts.0").String() // 输入内容
 	g.Log().Debug(ctx, "prompt", prompt)
 
@@ -74,6 +76,9 @@ func AuditLimit(r *ghttp.Request) {
 			r.Response.WriteJson(MsgMod400)
 			return
 		}
+	}
+	if system_hint != "research" {
+		model = "research"
 	}
 	limit, per, limiter, err := GetVisitorWithModel(ctx, token, model)
 	if err != nil {
