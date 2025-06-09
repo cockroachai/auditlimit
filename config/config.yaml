@@ -1,12 +1,17 @@
 PORT: 9612 
 OAIKEY: "" # OpenAI API key 用于内容审核
 MODERATION: "https://api.openai.com/v1/moderations"
+# 默认值
+DEFAULT: "40/3h"
 AUTO: "200/3h"
 TEXT-DAVINCI-002-RENDER-SHA: "200/3h"
-GPT-4O-MINI: "200/3h"
 GPT-4O: "60/3h"
-GPT-4: "20/3h"
+GPT-4-1: "60/3h"
+GPT-4-1-MINI: "200/3h"
 GPT-4O-CANMORE: "30/3h"
-O1-PREVIEW: "7/24h"
-O1-MINI: "50/24h"
+O1-PRO: "7/1d"
+O3-PRO: "7/1d"
+O3: "7/1d"
+O4-MINI: "50/1d"
+O4-MINI-HIGH: "50/7d"
 TEST: "1/1h"
