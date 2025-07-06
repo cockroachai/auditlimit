@@ -18,6 +18,8 @@ services:
       - 9611:8080
     environment:
       OAIKEY: "" # OpenAI API key 用于内容审核
+      DEFAULT: "40/3h" # 默认限流,没有指定的模型的默认值
+      RESEARCH: "2/24h" # 研究模型限流
       AUTO: "200/3h"
       TEXT-DAVINCI-002-RENDER-SHA: "200/3h"
       GPT-4O-MINI: "200/3h"

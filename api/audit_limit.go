@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gogf/gf/v2/container/garray"
 	"github.com/gogf/gf/v2/encoding/gjson"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
@@ -40,8 +41,11 @@ func AuditLimit(r *ghttp.Request) {
 
 	model := reqJson.Get("model").String() // 模型名称
 	g.Log().Debug(ctx, "model", model)
-	system_hint := reqJson.Get("system_hints.0").String() // 系统提示
-	g.Log().Debug(ctx, "system_hint", system_hint)
+	// system_hint := reqJson.Get("system_hints.0").String() // 系统提示
+	system_hints := reqJson.Get("system_hints").Strings() // 系统提示
+	systemHints := garray.NewStrArrayFrom(system_hints)
+
+	g.Log().Debug(ctx, "systemHints", systemHints)
 	prompt := reqJson.Get("messages.0.content.parts.0").String() // 输入内容
 	g.Log().Debug(ctx, "prompt", prompt)
 
@@ -77,7 +81,7 @@ func AuditLimit(r *ghttp.Request) {
 			return
 		}
 	}
-	if system_hint == "research" {
+	if systemHints.ContainsI("research") {
 		model = "research"
 	}
 	limit, per, limiter, err := GetVisitorWithModel(ctx, token, model)
