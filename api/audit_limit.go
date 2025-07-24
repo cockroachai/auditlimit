@@ -81,8 +81,11 @@ func AuditLimit(r *ghttp.Request) {
 			return
 		}
 	}
-	if systemHints.ContainsI("research") {
+	if systemHints.Contains("research") {
 		model = "research"
+	}
+	if systemHints.Contains("agent") {
+		model = "agent"
 	}
 	limit, per, limiter, err := GetVisitorWithModel(ctx, token, model)
 	if err != nil {
