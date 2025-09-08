@@ -66,6 +66,7 @@ func AuditLimit(r *ghttp.Request) {
 			"Content-Type":  "application/json",
 		}).PostVar(ctx, config.MODERATION, g.Map{
 			"input": prompt,
+			"model": "omni-moderation-latest",
 		})
 
 		// 返回的 json 中 results.flagged 为 true 时为违规内容
