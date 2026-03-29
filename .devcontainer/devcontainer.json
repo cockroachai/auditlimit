@@ -1,12 +1,12 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/universal
 {
-	"name": "Default Linux Universal",
+	"name": "AuditLimit Dev Container",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/universal:2-linux",
+	"image": "mcr.microsoft.com/devcontainers/universal:5-linux",
 	"features": {
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
-		"ghcr.io/devcontainers/features/go:1": {}
+		"ghcr.io/devcontainers/features/go:1": {},
+		"ghcr.io/devcontainers-extra/features/cloudflared:1": {}
 	},
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
@@ -18,9 +18,20 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "go install github.com/gogf/gf/cmd/gf/v2@latest",
 
+	"containerEnv": {
+		"TZ": "Asia/Shanghai"
+	},
+
 	// Configure tool-specific properties.
 	// "customizations": {},
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	"remoteUser": "root"
+	"remoteUser": "root",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-containers"
+			]
+		}
+	}
 }
